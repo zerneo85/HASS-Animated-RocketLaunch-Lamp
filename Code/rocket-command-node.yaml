@@ -1,0 +1,474 @@
+esphome:
+  name: rocket-command-node
+  friendly_name: rocket-command-node
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+
+wifi:
+  networks:
+  - ssid: "SSID1"
+    password: !secret wifi_password
+  - ssid: "SSID2"
+    password: !secret wifi_password
+  # Optional manual IP
+  manual_ip:
+    static_ip: !secret static_ip_rocket-command-node
+    gateway: !secret gateway
+    subnet: !secret subnet
+    dns1: !secret dns1
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Rocket-Command-Node"
+    password: !secret ap_pw
+    ap_timeout: 15s
+captive_portal:
+
+
+# Enable webserver
+web_server:
+  port: 80
+  auth:
+    username: !secret web_server_username
+    password: !secret web_server_password
+
+# Enable logging
+logger:
+  level: INFO
+
+# Enable Time Server
+time:
+  - platform: homeassistant
+    id: esptime
+
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret encryption_rocket-command-node
+  services:
+    - service: play_rtttl
+      variables:
+        song_str: string
+      then:
+        - rtttl.play:
+            rtttl: !lambda 'return song_str;'
+    - service: start_rocket_countdown
+      then:
+        - display.page.show: countdown10
+        - delay: 0.9s
+        - display.page.show: countdown9
+        - delay: 0.9s
+        - display.page.show: countdown8
+        - delay: 0.9s
+        - display.page.show: countdown7
+        - delay: 0.9s
+        - display.page.show: countdown6
+        - delay: 0.9s
+        - display.page.show: countdown5
+        - delay: 0.9s
+        - display.page.show: countdown4
+        - delay: 1s
+        - display.page.show: countdown3
+        - delay: 1s
+        - display.page.show: countdown2
+        - delay: 1s
+        - display.page.show: countdown1
+        - delay: 1s
+        - display.page.show: countdownliftoff
+        - delay: 3s
+    - service: show_distance
+      then:
+        - display.page.show: distance
+        - component.update: rocket_command_node_display
+    - service: show_rocket_planet
+      then:
+        - display.page.show: rocket
+        - component.update: rocket_command_node_display
+        - delay: 3s
+        - display.page.show: rocketstars
+        - component.update: rocket_command_node_display
+        - delay: 3s
+        - display.page.show: rocketplanet
+        - component.update: rocket_command_node_display
+        - delay: 3s
+    - service: play_rocket_launch
+      then:
+        - display.page.show: rla02
+        - delay: 0.5s
+        - display.page.show: rla03
+        - delay: 0.5s
+        - display.page.show: rla04
+        - delay: 0.5s
+        - display.page.show: rla05
+        - delay: 0.5s
+        - display.page.show: rla06
+        - delay: 0.5s
+        - display.page.show: rla07
+        - delay: 0.5s
+        - display.page.show: rla08
+        - delay: 0.5s
+        - display.page.show: rla09
+        - delay: 0.5s
+        - display.page.show: rla10
+        - delay: 0.5s
+        - display.page.show: rla11
+        - delay: 0.5s
+        - display.page.show: rla12
+        - delay: 0.5s
+        - display.page.show: rla13
+        - delay: 0.5s
+        - display.page.show: rla14
+        - delay: 0.5s
+        - display.page.show: rla15
+        - delay: 0.5s
+    - service: show_motion_detected
+      then:
+        - display.page.show: motion_detected
+        - component.update: rocket_command_node_display
+        - delay: 10s
+        - display.page.show: distance
+        - component.update: rocket_command_node_display
+    - service: show_goodnight
+      then:
+        - display.page.show: goodnight
+    - service: show_goodday
+      then:
+        - display.page.show: goodday
+        - delay: 2s
+        - component.update: rocket_command_node_display
+# Enable Home Assistant OTA        
+ota:
+  password: !secret ota_rocket-command-node
+
+
+# Sensors
+binary_sensor:
+  - platform: homeassistant
+    entity_id: input_boolean.rocketsleepmode
+    name: "sleepmode"
+    id: rocket_command_node_sleepmode
+  - platform: gpio
+    pin: GPIO33
+    name: "Rocket PIR Sensor"
+    device_class: motion
+    filters:
+      - delayed_on: 200ms
+  - platform: gpio
+    name: Button
+    pin:
+      number: GPIO14
+      mode: INPUT_PULLUP
+      inverted: true
+    filters:
+      - delayed_on: 1ms
+    on_multi_click:
+      - timing:
+          - ON for at most 1s
+          - OFF for at most 1s
+          - ON for at most 1s
+          - OFF for at least 0.2s
+        then:
+          - homeassistant.event:
+               event: esphome._rocket_button_pressed
+               data:
+                 message: "Double"
+      - timing:
+          - ON for 1s to 4s
+          - OFF for at least 0.5s
+        then:
+          - homeassistant.event:
+               event: esphome._rocket_button_pressed
+               data:
+                 message: "SingleLong"  
+      - timing:
+          - ON for at most 1s
+          - OFF for at least 0.5s
+        then:
+          - homeassistant.event:
+               event: esphome._rocket_button_pressed
+               data:
+                 message: "SingleShort"
+
+# Speaker and Microfoon
+switch:
+  - platform: gpio
+    pin:
+      number: GPIO26
+      inverted: False
+    name: "Speaker Record"
+    restore_mode: RESTORE_DEFAULT_OFF
+  - platform: gpio
+    pin:
+      number: GPIO27
+      inverted: False
+    name: "Speaker Play"
+    restore_mode: RESTORE_DEFAULT_OFF
+
+
+
+
+# Passive Buzzer
+output:
+  - platform: ledc
+    pin: GPIO25
+    id: rtttl_out
+    channel: 2
+
+
+ # rtttl   
+rtttl:
+  output: rtttl_out
+  on_finished_playback:
+    - logger.log: 'Song ended!'
+
+
+# Animations
+#animation:
+ # - file: animations/rocket_fly.gif
+ #   id: animation_rocket_fly
+
+
+
+# Images
+image:
+  - file: icons/clock.png
+    id: icon_clock
+    resize: 80x80
+  - file: icons/percentage.png
+    id: icon_percentage
+    resize: 80x80
+  - file: icons/sound.png
+    id: icon_sound
+    resize: 100x100
+  - file: icons/timer.png
+    id: icon_timer
+    resize: 100x100
+  - file: icons/rocket.png
+    id: icon_rocket
+    resize: 100x100
+  - file: icons/rocket_stars.png
+    id: icon_rocket_stars
+    resize: 100x100
+  - file: icons/rocket_planet.png
+    id: icon_rocket_planet
+    resize: 100x100
+  - file: animations/rocketlaunch/rla02.png
+    id: animation_rla02
+    resize: 100x100
+  - file: animations/rocketlaunch/rla03.png
+    id: animation_rla03
+    resize: 100x100
+  - file: animations/rocketlaunch/rla04.png
+    id: animation_rla04
+    resize: 100x100
+  - file: animations/rocketlaunch/rla05.png
+    id: animation_rla05
+    resize: 100x100
+  - file: animations/rocketlaunch/rla06.png
+    id: animation_rla06
+    resize: 100x100
+  - file: animations/rocketlaunch/rla07.png
+    id: animation_rla07
+    resize: 100x100
+  - file: animations/rocketlaunch/rla08.png
+    id: animation_rla08
+    resize: 100x100
+  - file: animations/rocketlaunch/rla09.png
+    id: animation_rla09
+    resize: 100x100
+  - file: animations/rocketlaunch/rla10.png
+    id: animation_rla10
+    resize: 100x100
+  - file: animations/rocketlaunch/rla11.png
+    id: animation_rla11
+    resize: 100x100
+  - file: animations/rocketlaunch/rla12.png
+    id: animation_rla12
+    resize: 100x100
+  - file: animations/rocketlaunch/rla13.png
+    id: animation_rla13
+    resize: 100x100
+  - file: animations/rocketlaunch/rla14.png
+    id: animation_rla14
+    resize: 100x100
+  - file: animations/rocketlaunch/rla15.png
+    id: animation_rla15
+    resize: 100x100
+  - file: icons/astronaut_standing.png
+    id: icon_astronaut_standing
+    resize: 45x45
+
+
+# Fonts
+font:
+  - file: 'arial.ttf'
+    id: fontariel10
+    size: 10
+  - file: 'arial.ttf'
+    id: fontariel12
+    size: 12
+  - file: 'arial.ttf'
+    id: fontariel14
+    size: 14
+  - file: 'arial.ttf'
+    id: fontariel18
+    size: 18
+  - file: 'arial.ttf'
+    id: fontariel24
+    size: 24
+  - file: 'arial.ttf'
+    id: fontariel28
+    size: 28
+  - file: 'arial.ttf'
+    id: fontariel30
+    size: 30
+  - file: 'arial.ttf'
+    id: fontariel60
+    size: 60
+
+# Text sensors
+text_sensor:
+  - platform: homeassistant
+    entity_id: sensor.rocket_command_node_distance
+    name: "distance"
+    id: rocket_command_node_distance
+
+
+# Distance sensor
+sensor:
+  - platform: ultrasonic
+    trigger_pin: GPIO32
+    echo_pin: GPIO13
+    name: "Distance"
+    update_interval: 0.2s
+    filters:
+    - lambda: return x * 100;
+    unit_of_measurement: "cm"
+    accuracy_decimals: 1
+
+# I²C Bus Display
+i2c:
+  sda: GPIO21
+  scl: GPIO22
+  scan: True
+  frequency: 400kHz
+
+
+
+# Display
+display:
+  - platform: ssd1306_i2c
+    model: "SH1106 128x64"
+    id: "rocket_command_node_display"
+    address: 0x3C
+    rotation: 180
+    update_interval: 1s
+    pages:
+      - id: distance
+        lambda: |-
+          if(id(rocket_command_node_sleepmode).state) {
+          } else {
+          it.printf(0, 0, id(fontariel14), TextAlign::TOP_LEFT, "Distance to Rocket");
+          it.printf(50, 30, id(fontariel24), TextAlign::TOP_LEFT, "%s", id(rocket_command_node_distance).state.c_str());
+          it.image(0, 20, id(icon_astronaut_standing));
+          }
+      - id: motion_detected
+        lambda: |-
+          it.printf(0, 0, id(fontariel18), "Press button to");
+          it.printf(0, 30, id(fontariel18), "launch rocket!!!");       
+      - id: countdown10
+        lambda: |-
+          it.print(55, 2, id(fontariel60), TextAlign::TOP_CENTER, "10");
+      - id: countdown9
+        lambda: |-
+          it.print(60, 2, id(fontariel60), TextAlign::TOP_CENTER, "9");    
+      - id: countdown8
+        lambda: |-
+          it.print(60, 2, id(fontariel60), TextAlign::TOP_CENTER, "8");
+      - id: countdown7
+        lambda: |-
+          it.print(60, 2, id(fontariel60), TextAlign::TOP_CENTER, "7");    
+      - id: countdown6
+        lambda: |-
+          it.print(60, 2, id(fontariel60), TextAlign::TOP_CENTER, "6");
+      - id: countdown5
+        lambda: |-
+          it.print(60, 2, id(fontariel60), TextAlign::TOP_CENTER, "5");    
+      - id: countdown4
+        lambda: |-
+          it.print(60, 2, id(fontariel60), TextAlign::TOP_CENTER, "4");
+      - id: countdown3
+        lambda: |-
+          it.print(60, 2, id(fontariel60), TextAlign::TOP_CENTER, "3");    
+      - id: countdown2
+        lambda: |-
+          it.print(60, 2, id(fontariel60), TextAlign::TOP_CENTER, "2");
+      - id: countdown1
+        lambda: |-
+          it.print(60, 2, id(fontariel60), TextAlign::TOP_CENTER, "1");    
+      - id: countdownliftoff
+        lambda: |-
+          it.print(60, 2, id(fontariel30), TextAlign::TOP_CENTER, "Liftoff");
+          it.print(60, 34, id(fontariel30), TextAlign::TOP_CENTER, "!!!");        
+      - id: rocket
+        lambda: |-
+          it.image(32, 0, id(icon_rocket));    
+      - id: rocketstars
+        lambda: |-
+          it.image(32, 0, id(icon_rocket_stars));    
+      - id: rocketplanet
+        lambda: |-
+          it.image(32, 0, id(icon_rocket_planet));      
+      - id: rla02
+        lambda: |-
+          it.image(32, 0, id(animation_rla02));
+      - id: rla03
+        lambda: |-
+          it.image(32, 0, id(animation_rla03));         
+      - id: rla04
+        lambda: |-
+          it.image(32, 0, id(animation_rla04));
+      - id: rla05
+        lambda: |-
+          it.image(32, 0, id(animation_rla05));
+      - id: rla06
+        lambda: |-
+          it.image(32, 0, id(animation_rla06));
+      - id: rla07
+        lambda: |-
+          it.image(32, 0, id(animation_rla07));
+      - id: rla08
+        lambda: |-
+          it.image(32, 0, id(animation_rla08));         
+      - id: rla09
+        lambda: |-
+          it.image(32, 0, id(animation_rla09));
+      - id: rla10
+        lambda: |-
+          it.image(32, 0, id(animation_rla10));
+      - id: rla11
+        lambda: |-
+          it.image(32, 0, id(animation_rla11));
+      - id: rla12
+        lambda: |-
+          it.image(32, 0, id(animation_rla12));
+      - id: rla13
+        lambda: |-
+          it.image(32, 0, id(animation_rla13));         
+      - id: rla14
+        lambda: |-
+          it.image(32, 0, id(animation_rla14));
+      - id: rla15
+        lambda: |-
+          it.image(32, 0, id(animation_rla15));
+      - id: goodnight
+        lambda: |-
+          it.print(0, 15, id(fontariel28), TextAlign::TOP_LEFT, "Goodnight");
+      - id: goodday
+        lambda: |-
+          it.print(0, 15, id(fontariel30), TextAlign::TOP_LEFT, "Goodday");
