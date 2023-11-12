@@ -85,10 +85,10 @@ STL files can also be downloaded from the directory [Designs](https://github.com
 
 
 ## Images – Design STL files
-![Design STL files](https://github.com/zerneo85/HASS-Animated-RocketLaunch-Lamp/blob/main/Media/Rocket-Command-Node Box_Front.png)
+![Design STL files](https://github.com/zerneo85/HASS-Animated-RocketLaunch-Lamp/blob/main/Media/Rocket-Command-Node_Box_Front.png)
 
 ## Images – Picture Internal
-![Picture Internal](https://github.com/zerneo85/HASS-Animated-RocketLaunch-Lamp/blob/main/Media/Rocket-Internal)
+![Picture Internal](https://github.com/zerneo85/HASS-Animated-RocketLaunch-Lamp/blob/main/Media/Rocket-Internal.png)
 
 ## Images – Picture Home Assistant Dashboard 
 ![Picture Home Assistant Dashboard](https://github.com/zerneo85/HASS-Animated-RocketLaunch-Lamp/blob/main/Media/Home_Assistant_Dashboard.png)
