@@ -1,0 +1,24 @@
+alias: RocketMotionDetected
+description: ""
+trigger:
+  - platform: state
+    entity_id:
+      - binary_sensor.rocket_command_node_rocket_pir_sensor
+    to: "on"
+condition:
+  - condition: and
+    conditions:
+      - condition: state
+        entity_id: script.startlaunchsequence
+        state: "off"
+        for:
+          hours: 0
+          minutes: 1
+          seconds: 0
+      - condition: state
+        entity_id: input_boolean.rocketsleepmode
+        state: "off"
+action:
+  - service: esphome.rocket_command_node_show_motion_detected
+    data: {}
+mode: single

@@ -1,0 +1,15 @@
+alias: StartLaunchSequenceRocketButton
+description: ""
+trigger:
+  - platform: event
+    event_type: esphome._rocket_button_pressed
+    event_data:
+      message: SingleShort
+condition:
+  - condition: state
+    entity_id: input_boolean.rocketsleepmode
+    state: "off"
+action:
+  - service: script.startlaunchsequence
+    data: {}
+mode: single

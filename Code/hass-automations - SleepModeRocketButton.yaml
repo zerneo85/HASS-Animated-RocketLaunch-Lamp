@@ -1,0 +1,46 @@
+alias: SleepModeRocketButton
+description: ""
+trigger:
+  - platform: event
+    event_type: esphome._rocket_button_pressed
+    event_data:
+      message: SingleLong
+  - platform: event
+    event_type: esphome._rocket_button_pressed
+    event_data:
+      message: Double
+condition: []
+action:
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id: input_boolean.rocketsleepmode
+            state: "on"
+        sequence:
+          - service: input_boolean.turn_off
+            data: {}
+            target:
+              entity_id: input_boolean.rocketsleepmode
+          - service: esphome.rocket_command_node_show_goodday
+            data: {}
+          - device_id: d79222ec48d77054df776e38ab0d43b7
+            domain: select
+            entity_id: 26c193776f826ccb543a1fc26d061c56
+            type: select_option
+            option: ChaseLB
+      - conditions:
+          - condition: state
+            entity_id: input_boolean.rocketsleepmode
+            state: "off"
+        sequence:
+          - service: input_boolean.turn_on
+            data: {}
+            target:
+              entity_id: input_boolean.rocketsleepmode
+          - service: esphome.rocket_command_node_show_goodnight
+            data: {}
+          - type: turn_off
+            device_id: d79222ec48d77054df776e38ab0d43b7
+            entity_id: 62365dce7a8798c862cde58ffe417b81
+            domain: light
+mode: single

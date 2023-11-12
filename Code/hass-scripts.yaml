@@ -1,0 +1,85 @@
+startlaunchsequence:
+  alias: StartLaunchSequence
+  sequence:
+  - service: esphome.rocket_command_node_start_rocket_countdown
+    data: {}
+  - device_id: d79222ec48d77054df776e38ab0d43b7
+    domain: select
+    entity_id: 26c193776f826ccb543a1fc26d061c56
+    type: select_option
+    option: OscilatteFB
+  - type: turn_on
+    device_id: 83d97e08832d97ae642003a628c5e62b
+    entity_id: ca3cef927eab6b97d8df2ed92448f404
+    domain: switch
+  - type: turn_off
+    device_id: 83d97e08832d97ae642003a628c5e62b
+    entity_id: ca3cef927eab6b97d8df2ed92448f404
+    domain: switch
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 11
+      milliseconds: 0
+  - parallel:
+    - device_id: d79222ec48d77054df776e38ab0d43b7
+      domain: select
+      entity_id: 26c193776f826ccb543a1fc26d061c56
+      type: select_option
+      option: SparkleDarkFast
+    - service: esphome.rocket_command_node_play_rocket_launch
+      data: {}
+    - service: esphome.rocket_command_node_play_rtttl
+      data:
+        song_str: Axel F:d=4,o=5,b=125:g,8a#.,16g,16p,16g,8c6,8g,8f,g,8d.6,16g,16p,16g,8d#6,8d6,8a#,8g,8d6,8g6,16g,16f,16p,16f,8d,8a#,2g,p,16f6,8d6,8c6,8a#,g,8a#.,16g,16p,16g,8c6,8g,8f,g,8d.6,16g,16p,16g,8d#6,8d6,8a#,8g,8d6,8g6,16g,16f,16p,16f,8d,8a#,2g
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 9
+      milliseconds: 0
+  - service: esphome.rocket_command_node_show_rocket_planet
+    data: {}
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 10
+      milliseconds: 0
+    enabled: true
+  - service: esphome.rocket_command_node_show_distance
+    data: {}
+    enabled: true
+  - device_id: d79222ec48d77054df776e38ab0d43b7
+    domain: select
+    entity_id: 26c193776f826ccb543a1fc26d061c56
+    type: select_option
+    option: ChaseLB
+  mode: single
+  icon: mdi:rocket-launch-outline
+showdistancerocket:
+  alias: ShowDistanceRocket
+  sequence:
+  - service: esphome.rocket_command_node_show_distance
+    data: {}
+  mode: single
+  icon: mdi:rocket-outline
+showrocketplanet:
+  alias: ShowRocketPlanet
+  sequence:
+  - service: esphome.rocket_command_node_show_rocket_planet
+    data: {}
+  mode: single
+  icon: mdi:rocket-outline
+playrocketlaunch:
+  alias: PlayRocketLaunch
+  sequence:
+  - service: esphome.rocket_command_node_play_rocket_launch
+    data: {}
+  mode: single
+  icon: mdi:rocket-outline
+startrocketcountdown:
+  alias: StartRocketCountdown
+  sequence:
+  - service: esphome.rocket_command_node_start_rocket_countdown
+    data: {}
+  mode: single
+  icon: mdi:rocket-outline
