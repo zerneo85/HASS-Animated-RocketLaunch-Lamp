@@ -39,22 +39,18 @@ ESP32-WLED
 
 
 # PCB Design
-The PCB i used is a PCB Board Hole Grid Board from 7cm x 3cm that i soldered the sensors on. All the sensors (ESP32 Cam & PIR) that are on the front of the PCB are detachable, to achieve this i soldered 2 rows of 8 female pins en for the PIR sensor a 3 row female pin.
-
-For power & ground i sewed a wire on row 3 & 8 over the lengt of the PCB.
-The micro USB DIP i soldered on A4 for ground (i connected it to row 3) and A8 for 5v power.
-
+- The PCB i used is a PCB Board Hole Grid Board from 7cm x 5cm that i soldered the Terminal Block Connector on. 
+- For the ESP32-WLED i soldered 2 rows of 8 female pins so that it is detachable. 
+- All the sensors except the MAX9814 are connected to (ESP32-HASS) Breakout Board.
+- For power & ground i used the Terminal Block Cinnectors over the lengt of the PCB.
 
 
 # ESP Home YAML file for Home Assistant
 In the directory [Code](https://github.com/zerneo85/HASS-Animated-RocketLaunch-Lamp/tree/main/Code) you can find the YAML file that i made and use in ESP Home in Home Assistant. Some important points are:
-
 - I use the secrets file in ESP Home for all sensitive or device related data.
-- The file makes use of the ds18b20 temperature sensor and not the DHT11 sensor.
-- The ds18b20 has a disadvance in accuracy and requires a offset in temperature.
-- To fix false alarms of the PIR & Doppler sensor i use a delayed_on value, for the PIR sensor it solves the false alarms.
-- The Doppler sensor still requires some troubleshooting to get more stable.
 
+# Scripts and automations Home Assistant
+In the directory [Code](https://github.com/zerneo85/HASS-Animated-RocketLaunch-Lamp/tree/main/Code) you can find the YAML file that i made and use in Home Assistant for the scripts and automations. You need to change these accordingly 
 
 
 # 3D Print STL files
@@ -81,18 +77,20 @@ STL files can also be downloaded from the directory [Designs](https://github.com
 STL files can also be downloaded from the directory [Designs](https://github.com/zerneo85/HASS-Animated-RocketLaunch-Lamp/tree/main/Designs).
 
 
-But the STL files can also be downloaded from the directory [Designs](https://github.com/zerneo85/HASS-Animated-RocketLaunch-Lamp/tree/main/Designs).
-
 # Images – General
-Images, animation and used icon files can also be downloaded from the directory [Media](https://github.com/zerneo85/HASS-Animated-RocketLaunch-Lamp/tree/main/Media).
+- Icons and animations i used can also be downloaded from the directory [Media](https://github.com/zerneo85/HASS-Animated-RocketLaunch-Lamp/tree/main/Media/icons).
+- Images and animations i used can also be downloaded from the directory [Media](https://github.com/zerneo85/HASS-Animated-RocketLaunch-Lamp/tree/main/Media/rocketlaunch).
+- Images of components i used can also be downloaded from the directory [Media](https://github.com/zerneo85/HASS-Animated-RocketLaunch-Lamp/tree/main/Media/components).
 
 
-## Security-Node Front Closed
-![PCB Front](https://github.com/zerneo85/HASS-Animated-RocketLaunch-Lamp/blob/main/Images/Security-Node-Front-Closed.png)
 
-## Security-Node Front Open
-![PCB Front](https://github.com/zerneo85/HASS-Animated-RocketLaunch-Lamp/blob/main/Images/Security-Node-Front-Open.png)
+## Images – Design STL files
+![Design STL files](https://github.com/zerneo85/HASS-Animated-RocketLaunch-Lamp/blob/main/Media/Rocket-Command-Node Box_Front.png)
 
-## Security-Node Back
-![PCB Front](https://github.com/zerneo85/HASS-Animated-RocketLaunch-Lamp/blob/main/Images/Security-Node-Back.png)
+## Images – Picture Internal
+![Picture Internal](https://github.com/zerneo85/HASS-Animated-RocketLaunch-Lamp/blob/main/Media/Rocket-Internal)
+
+## Images – Picture Home Assistant Dashboard 
+![Picture Home Assistant Dashboard](https://github.com/zerneo85/HASS-Animated-RocketLaunch-Lamp/blob/main/Media/Home_Assistant_Dashboard.png)
+
 
